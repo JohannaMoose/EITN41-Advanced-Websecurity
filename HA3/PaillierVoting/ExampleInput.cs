@@ -9,7 +9,7 @@ namespace PaillierVoting
         {
             p = 5;
             q = 7;
-            g = p*q + 1;
+            g = 867;
             votes = new List<BigInteger>
             {
                 new BigInteger(929),
