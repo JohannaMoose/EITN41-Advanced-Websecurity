@@ -1,0 +1,86 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MathNet.Numerics.Interpolation;
+
+namespace DeactivationCodes
+{
+    class Program
+    {
+        private static int[] privatePolynomial;
+        private static int k;
+
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Welcome to the program that will stop WW3");
+            Console.Write("What is the value of k?: ");
+            k = Convert.ToInt32(Console.ReadLine());
+
+            Console.Write("What is the value of n?: ");
+            var n = Convert.ToInt32(Console.ReadLine());
+
+            privatePolynomial = new int[k];
+            for (int i = 0; i < k; i++)
+            {
+                if (i == 0)
+                {
+                    Console.Write("What is the constant in the private polynom?: ");
+                    privatePolynomial[0] = Convert.ToInt32(Console.ReadLine());
+                }
+                else
+                {
+                    Console.Write("What is the term with x^{0}?: ", i);
+                    privatePolynomial[i] = Convert.ToInt32(Console.ReadLine());
+                }
+            }
+
+            var polynomialShares = new List<int>();
+            
+            for (int i = 2; i <= n; i++)
+            {
+                Console.Write("What value was shared from participant {0}:", i);
+                polynomialShares.Add(Convert.ToInt32(Console.ReadLine()));
+            }
+            
+            var sharedSums = new List<int>();
+
+            for (int i = 2; i <= n; i++)
+            {
+                Console.Write("What sum was shared from participant {0} (enter -1 for no value):", i);
+                sharedSums.Add(Convert.ToInt32(Console.ReadLine()));
+            }
+
+        
+            polynomailShares.Insert(0, calcPol(1)); // Insert my value of f_1(1)
+            var sharedX = new List<double> {1};
+            var sharedY = new List<double>();
+            for (int j = 2; j < sharedSums.Count+2; j++)
+            {
+                if (sharedSums[j-2] == -1) continue;
+                sharedX.Add(j);
+                sharedY.Add(sharedSums[j-2]);
+            }
+
+            var sumPoint = polynomailShares.Sum();
+            sharedY.Insert(0,sumPoint);
+
+            var key = new NevillePolynomialInterpolation(sharedX.ToArray(),
+              sharedY.ToArray());
+
+            Console.WriteLine("Got the deactivation code: {0}", key.Interpolate(0));
+            Console.WriteLine("Press any key to quit");
+            Console.ReadKey();
+        }
+
+        private static int calcPol(int x)
+        {
+            var sum = Convert.ToDouble(privatePolynomial[0]);
+            for (int i = 1; i < privatePolynomial.Length; i++)
+            {
+                sum += privatePolynomial[i]*Math.Pow(x, i);
+            }
+
+            return Convert.ToInt32(sum);
+        }
+    }
+}
