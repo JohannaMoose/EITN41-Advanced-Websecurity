@@ -15,8 +15,8 @@ namespace UnsecureSite
         private static string name;
         private static string grade;
 
-        private static int nbrOfIterations = 10;
-        private static int tolerance = 400;
+        private static int nbrOfIterations = 5;
+        private static int tolerance = 100;
         private static int startIndex;
 
         static void Main(string[] args)
