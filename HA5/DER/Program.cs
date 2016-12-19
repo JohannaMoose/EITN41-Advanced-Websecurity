@@ -21,99 +21,66 @@ namespace DER
 
             var encoded = derEncode(toEncode);
 
-            var encodedBytes = stringToByteArray(encoded);
-            var hexReturn = BitConverter.ToString(encodedBytes).Replace("-", "").ToLower();
-
             Console.WriteLine("The resulting DER encoding for the string is: {0}", encoded);
             Console.WriteLine("Press any key to quit");
             Console.ReadKey(); 
         }
 
-        private static byte[] stringToByteArray(string hex)
-        {
-            return Enumerable.Range(0, hex.Length)
-                             .Where(x => x % 2 == 0)
-                             .Select(x => Convert.ToByte(hex.Substring(x, 2), 16))
-                             .ToArray();
-        }
-
         private static string derEncode(BigInteger val)
         {
             var tag = "02";
-            var valByte = val.ToByteArray();
             var valHex = val.ToString("x");
 
             if (valHex.Length%2 != 0)
                 valHex = "0" + valHex; 
 
-            var lengthHex = createLength(valHex.Length/2);
+            var lengthHex = lengthValue(valHex.Length/2);
 
              return tag + lengthHex + valHex; 
         }
 
-        private static string createLength(int nbrOfBytes)
+        private static string lengthValue(BigInteger nbrOfBytesOfData)
         {
-            var byteLength = calculateLengthInBytes(nbrOfBytes);
+            var b = nbrOfBytesOfData.ToByteArray().ToList();
 
-            if (nbrOfBytes < 128)
-                return byteLength;
+            if (nbrOfBytesOfData >= 128)
+            {
+                var lengthBit = new BitArray(8) { [0] = true };
+                var bitRepOfNbrOfBytes = Convert.ToString(b.Count, 2);
+                for (int i = 0; i < bitRepOfNbrOfBytes.Length; i++)
+                {
+                    if (bitRepOfNbrOfBytes[i] == '1')
+                        lengthBit[i + 8 - bitRepOfNbrOfBytes.Length] = true;
+                }
+                b.Insert(0, convertToBytes(lengthBit)[0]);
+            }
 
-            var lenghByte = getRegularLengthValue(nbrOfBytes);
-            return lenghByte + byteLength;
+
+            return BitConverter.ToString(b.ToArray()).Replace("-", "");
         }
 
-        private static string calculateLengthInBytes(int nbrOfBytes)
+        static byte[] convertToBytes(BitArray bits)
         {
-            var lengthAry = BitConverter.GetBytes(nbrOfBytes).ToList();
-            var length = new List<byte>();
-            while (lengthAry.Any(x => x != 0x00))
+            var numBytes = bits.Count / 8;
+            if (bits.Count % 8 != 0) numBytes++;
+
+            var bytes = new byte[numBytes];
+            int byteIndex = 0, bitIndex = 0;
+
+            for (var i = 0; i < bits.Count; i++)
             {
-                length.Add(lengthAry.First());
-                lengthAry.RemoveAt(0);
+                if (bits[i])
+                    bytes[byteIndex] |= (byte)(1 << (7 - bitIndex));
+
+                bitIndex++;
+                if (bitIndex == 8)
+                {
+                    bitIndex = 0;
+                    byteIndex++;
+                }
             }
 
-            return BitConverter.ToString(length.ToArray()).Replace("-", "");
-        }
-
-        private static string getRegularLengthValue(int nbrOfBytes)
-        {
-            var bitRep = Convert.ToString(nbrOfBytes, 2);
-            while (bitRep.Length%8 != 0)
-            {
-                bitRep = "0" + bitRep;
-            }
-
-            var nbr = bitRep.Length/8;
-
-            string s = Convert.ToString(nbr, 2); //Convert to binary in a string
-
-            int[] bits = s.PadLeft(8, '0') // Add 0's from left
-                .Select(c => int.Parse(c.ToString())) // convert each char to int
-                .ToArray(); // Convert IEnumerable from select to Array
-            bits[0] = 1;
-
-            var bitAr = new BitArray(8);
-            for (var i = 0; i < 8; i++)
-            {
-                if (bits[i] == 1)
-                    bitAr[i] = true;
-            }
-
-            var bytes = ConvertToByte(bitAr);
-
-
-            return bytes.ToString("x");
-        }
-
-        static byte ConvertToByte(BitArray bits)
-        {
-            if (bits.Count != 8)
-            {
-                throw new ArgumentException("bits");
-            }
-            byte[] bytes = new byte[1];
-            bits.CopyTo(bytes, 0);
-            return bytes[0];
+            return bytes;
         }
     }
 }
