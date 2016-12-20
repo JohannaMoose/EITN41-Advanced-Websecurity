@@ -15,9 +15,11 @@ namespace RSAKey
             var e = BigInteger.Parse("65537");
             Console.WriteLine("Welcome to the RSA Key");
             Console.Write("What is the value p?: ");
-            var p = BigInteger.Parse(Console.ReadLine());
+            var p = BigInteger.Parse("139721121696950524826588106850589277149201407609721772094240512732263435522747938311240453050931930261483801083660740974606647762343797901776568952627044034430252415109426271529273025919247232149498325412099418785867055970264559033471714066901728022294156913563009971882292507967574638004022912842160046962763"); //Console.ReadLine());
             Console.Write("What is the value q?: ");
-            var q = BigInteger.Parse(Console.ReadLine());
+            var q =
+                BigInteger.Parse(
+                    "141482624370070397331659016840167171669762175617573550670131965177212458081250216130985545188965601581445995499595853199665045326236858265192627970970480636850683227427420000655754305398076045013588894161738893242561531526805416653594689480170103763171879023351810966896841177322118521251310975456956247827719");//Console.ReadLine());
 
             var sequence = createSequence(p, q, e);
 
@@ -53,9 +55,11 @@ namespace RSAKey
             var sequence = new List<byte> {0x30};
             sequence.AddRange(length);
             sequence.AddRange(sequenceData);
+
+            Console.WriteLine("Debug: Sequence hex {0}", BitConverter.ToString(sequence.ToArray()).Replace("-", ""));
+
             return sequence;
         }
-
 
         private static byte[] derEncode(BigInteger val)
         {
@@ -66,6 +70,13 @@ namespace RSAKey
                 valHex = "0" + valHex;
 
             var lengthHex = lengthValue(valHex.Length / 2);
+            Console.WriteLine("Lenght: {0}", lengthHex);
+
+            
+            if (lengthHex.Length > 4 && lengthHex.Substring(2, 2) == "00")
+            {
+                lengthHex = lengthHex.Replace("00", "");
+            }
 
             return stringToByteArray(tag + lengthHex + valHex);
         }
@@ -76,6 +87,8 @@ namespace RSAKey
             b.Reverse();
             if(b.Last() == 0x00 && nbrOfBytesOfData != 256)
                 b.RemoveAt(b.Count-1);
+            else if(b.First() == 0x00)
+                b.RemoveAt(0);
 
             if (nbrOfBytesOfData >= 128)
             {
