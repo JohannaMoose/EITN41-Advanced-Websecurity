@@ -42,6 +42,11 @@ namespace DER
         private static string lengthValue(BigInteger nbrOfBytesOfData)
         {
             var b = nbrOfBytesOfData.ToByteArray().ToList();
+            b.Reverse();
+            if (b.Last() == 0x00 && nbrOfBytesOfData != 256)
+                b.RemoveAt(b.Count - 1);
+            else if (b.First() == 0x00)
+                b.RemoveAt(0);
 
             if (nbrOfBytesOfData >= 128)
             {
@@ -54,7 +59,6 @@ namespace DER
                 }
                 b.Insert(0, convertToBytes(lengthBit)[0]);
             }
-
 
             return BitConverter.ToString(b.ToArray()).Replace("-", "");
         }

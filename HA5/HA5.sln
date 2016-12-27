@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DER", "DER\DER.csproj", "{6
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSAKey", "RSAKey\RSAKey.csproj", "{E12425D6-585A-4931-9530-5559D158B091}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RSAKey2", "RSAKey2\RSAKey2.csproj", "{99480A97-2894-4601-B3CF-B7ADA4BFA45A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E12425D6-585A-4931-9530-5559D158B091}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E12425D6-585A-4931-9530-5559D158B091}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E12425D6-585A-4931-9530-5559D158B091}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99480A97-2894-4601-B3CF-B7ADA4BFA45A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99480A97-2894-4601-B3CF-B7ADA4BFA45A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99480A97-2894-4601-B3CF-B7ADA4BFA45A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99480A97-2894-4601-B3CF-B7ADA4BFA45A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
